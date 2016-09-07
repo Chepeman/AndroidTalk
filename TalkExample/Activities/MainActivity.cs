@@ -1,13 +1,19 @@
 ﻿using Android.App;
 using Android.Widget;
 using Android.OS;
+using Android.Support.V7.Widget;
+using System.Collections.Generic;
+using Android.Support.V7.Widget.Helper;
 
 namespace TalkExample
 {
-	[Activity(Label = "TalkExample", MainLauncher = true, Icon = "@mipmap/icon")]
+	[Activity(Label = "Language Ranking - Talk Example", MainLauncher = true, Icon = "@mipmap/icon")]
 	public class MainActivity : Activity
 	{
-		int count = 1;
+		RecyclerView RecyclerView;
+		RankingAdapter Adapter;
+		List<Language> LanguageList;
+		LinearLayoutManager LayoutManager;
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
@@ -15,13 +21,32 @@ namespace TalkExample
 
 			// Set our view from the "main" layout resource
 			SetContentView(Resource.Layout.Main);
+			RecyclerView = FindViewById<RecyclerView>(Resource.Id.ranking_recyclerlist);
 
-			// Get our button from the layout resource,
-			// and attach an event to it
-			Button button = FindViewById<Button>(Resource.Id.myButton);
+			LanguageList = new List<Language>();
+			LoadLanguages();
 
-			button.Click += delegate { button.Text = string.Format("{0} clicks!", count++); };
+			LayoutManager = new LinearLayoutManager(this);
+			LayoutManager.Orientation = LinearLayoutManager.Vertical;
+			RecyclerView.SetLayoutManager(LayoutManager);
+			Adapter = new RankingAdapter(LanguageList);
+			RecyclerView.SetAdapter(Adapter);
+
+			ItemTouchCallback callback = new ItemTouchCallback(Adapter);
+			ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+			touchHelper.AttachToRecyclerView(RecyclerView);
 		}
+
+		void LoadLanguages()
+		{
+			LanguageList.Add(new Language("C#", "Microsoft", "csharp_icon"));
+			LanguageList.Add(new Language("Java", "Sun Systems", "java_icon"));
+			LanguageList.Add(new Language("HTML", "W3C && WHATWG", "html_icon"));
+			LanguageList.Add(new Language("C++", "Bjarne Stroustrup", "cplus_icon"));
+			LanguageList.Add(new Language("JavaScript", "Various Co.", "js_icon"));
+		}
+
+
 	}
 }
 
